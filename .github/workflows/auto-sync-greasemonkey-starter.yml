@@ -1,0 +1,43 @@
+name: Sync /starters/greasemonkey/ to KudoAI/chatgpt.js-greasemonkey-starter/
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'starters/greasemonkey/**'
+
+jobs:
+  build:
+    if: (github.repository == 'KudoAI/chatgpt.js') && (github.event.commits[0].committer.username != 'kudo-sync-bot')
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout KudoAI/chatgpt.js
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.REPO_SYNC_PAT }}
+          repository: KudoAI/chatgpt.js
+          path: KudoAI/chatgpt.js
+
+      - name: Checkout KudoAI/chatgpt.js-greasemonkey-starter
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.REPO_SYNC_PAT }}
+          repository: KudoAI/chatgpt.js-greasemonkey-starter
+          path: KudoAI/chatgpt.js-greasemonkey-starter
+
+      - name: Sync /starters/greasemonkey/ to KudoAI/chatgpt.js-greasemonkey-starter/
+        run: |
+          rsync -avhr \
+            "${{ github.workspace }}/KudoAI/chatgpt.js/starters/greasemonkey/" \
+            "${{ github.workspace }}/KudoAI/chatgpt.js-greasemonkey-starter/"
+
+      - name: Push to KudoAI/chatgpt.js-greasemonkey-starter
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          push_options: '--force'
+          add_options: '--all'
+          commit_user_email: auto-sync@kudoai.com
+          commit_message: '${{ github.event.head_commit.message }} ↞ [auto-sync from `KudoAI/chatgpt.js`]'
+          file_pattern: '**'
+          repository: KudoAI/chatgpt.js-greasemonkey-starter

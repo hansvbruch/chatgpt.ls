@@ -1,0 +1,53 @@
+{
+  "name": "chatgpt",
+  "version": "2.6.3",
+  "description": "Client-side JavaScript library for ChatGPT",
+  "main": "chatgpt.js",
+  "scripts": {
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node utils\\build-minified-chatgpt.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kudoai/chatgpt.js.git"
+  },
+  "keywords": [
+    "chatgpt",
+    "artificial intelligence",
+    "nlp",
+    "javascript",
+    "library",
+    "frontend",
+    "clientside",
+    "chatbot",
+    "openai",
+    "ai",
+    "chat",
+    "gpt",
+    "gpt3",
+    "gpt4",
+    "machine learning",
+    "conversational ai",
+    "ml",
+    "bot"
+  ],
+  "author": [
+    {
+      "name": "KudoAI & contributors",
+      "url": "https://kudoai.com"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kudoai/chatgpt.js/issues"
+  },
+  "homepage": "https://chatgpt.js.org",
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "imagemin": "^8.0.1",
+    "imagemin-webp": "^8.0.0",
+    "uglify-js": "^3.17.4"
+  }
+}

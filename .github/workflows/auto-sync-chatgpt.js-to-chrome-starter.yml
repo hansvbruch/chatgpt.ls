@@ -1,0 +1,72 @@
+name: Sync chatgpt.js to (/starters/chrome && KudoAI/chatgpt.js-chrome-starter)/extension/lib/chatgpt.js
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'chatgpt.js'
+
+jobs:
+  build:
+    if: (github.repository == 'KudoAI/chatgpt.js') && (github.event.commits[0].committer.username != 'kudo-sync-bot')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout KudoAI/chatgpt.js
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.REPO_SYNC_PAT }}
+          repository: KudoAI/chatgpt.js
+          path: KudoAI/chatgpt.js
+
+      - name: Checkout KudoAI/chatgpt.js-chrome-starter
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.REPO_SYNC_PAT }}
+          repository: KudoAI/chatgpt.js-chrome-starter
+          path: KudoAI/chatgpt.js-chrome-starter
+
+      - name: Sync chatgpt.js to /starters/chrome/extension/lib/chatgpt.js + update version in manifest.json
+        run: |
+          cp -f \
+            "${{ github.workspace }}/KudoAI/chatgpt.js/chatgpt.js" \
+            "${{ github.workspace }}/KudoAI/chatgpt.js/starters/chrome/extension/lib/chatgpt.js"
+          echo "export { chatgpt };" >> "${{ github.workspace }}/KudoAI/chatgpt.js/starters/chrome/extension/lib/chatgpt.js"
+          cd "${{ github.workspace }}/KudoAI/chatgpt.js/starters/chrome/extension"
+          echo "Contents of manifest.json before substitution:"
+          cat manifest.json
+          sed -i -E 's/"version": "(\d+\.\d+\.\d+)\.*(\d*)"/"version": "test"/g' manifest.json
+          echo "Contents of manifest.json after substitution:"
+          cat manifest.json
+
+      - name: Sync chatgpt.js to KudoAI/chatgpt.js-chrome-starter/extension/lib/chatgpt.js + update version in manifest.json
+        run: |
+          cp -f \
+            "${{ github.workspace }}/KudoAI/chatgpt.js/chatgpt.js" \
+            "${{ github.workspace }}/KudoAI/chatgpt.js-chrome-starter/extension/lib/chatgpt.js"
+          echo "export { chatgpt };" >> "${{ github.workspace }}/KudoAI/chatgpt.js-chrome-starter/extension/lib/chatgpt.js"
+          cd "${{ github.workspace }}/KudoAI/chatgpt.js-chrome-starter/extension"
+          echo "Contents of manifest.json before substitution:"
+          cat manifest.json
+          sed -i -E 's/"version": "(\d+\.\d+\.\d+)\.*(\d*)"/"version": "test"/g' manifest.json
+          echo "Contents of manifest.json after substitution:"
+          cat manifest.json
+
+      - name: Push to KudoAI/chatgpt.js
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          push_options: '--force'
+          add_options: '--all'
+          commit_user_email: auto-sync@kudoai.com
+          commit_message: '${{ github.event.head_commit.message }} ↞ [auto-sync from `KudoAI/chatgpt.js`]'
+          file_pattern: 'starters/chrome/extension/**'
+          repository: KudoAI/chatgpt.js
+
+      - name: Push to KudoAI/chatgpt.js-chrome-starter
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          push_options: '--force'
+          add_options: '--all'
+          commit_user_email: auto-sync@kudoai.com
+          commit_message: '${{ github.event.head_commit.message }} ↞ [auto-sync from `KudoAI/chatgpt.js`]'
+          file_pattern: 'extension/**'
+          repository: KudoAI/chatgpt.js-chrome-starter
